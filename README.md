@@ -13,6 +13,18 @@ GET <api_base>/status/<token>/?format=json
 -> {"ok":true,"status":{"number":"SK-2026-000001","stage":"ready",...}}
 ```
 
+## Gdzie to działa
+
+Wdrożone na VPS pod adresem `https://sk.mati-it.pl/klient/status/<token>/`
+(katalog `/srv/sk-klient`, nginx-serwis przekazuje `/klient/` do `index.php`).
+Style i fonty pochodzą ze wspólnego `/tracking/`, więc wygląd jest identyczny ze
+stroną `/status/` w `sk-serwis`. Docelowo może stać na własnej domenie
+(np. `status.studio-komp.pl`) - konfiguracja w `deploy/nginx.conf`.
+
+Wymóg po stronie serwera: katalog `/srv/sk-klient` musi być w
+`php_admin_value[open_basedir]` poolu PHP-FPM, inaczej PHP zwraca
+`Unable to open primary script ... (Operation not permitted)`.
+
 Takie rozdzielenie jest celowe: tokeny, mapowanie statusów i dane klientów są
 w jednym miejscu (repozytorium `sk-serwis`), a ten projekt tylko renderuje to,
 co dostanie. Wyciek kodu tej aplikacji nie daje dostępu do bazy ani do tokenów.

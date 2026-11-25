@@ -49,6 +49,8 @@ cp config.example.php config.php
 | `api_timeout` | czas oczekiwania na API w sekundach (domyślnie 5) |
 | `public_url` | adres tej strony (stopka, canonical) |
 | `log_dir` | katalog logów technicznych (bez tokenów i danych klienta) |
+| `ca_bundle` | opcjonalna ścieżka do pakietu CA (gdy PHP nie ma `curl.cainfo`) |
+| `ipv4_only` | opcjonalne wymuszenie IPv4 (gdy hosting ma niedziałające IPv6) |
 
 ## Podgląd lokalny
 
@@ -76,8 +78,14 @@ curl -I https://<domena>/tracking/status.css    # 200 + immutable
 ```
 
 Kody: `200` strona statusu, `404` nieaktywny/nieprawidłowy link, `405` metoda
-inna niż GET/HEAD, `429` limit tempa z API, `503` API serwisu nie odpowiada
-(osobny komunikat, nie „link nieaktywny”).
+inna niż GET/HEAD, `429` limit tempa z API (API serwisu przyjmuje 30 żądań na
+minutę z jednego adresu IP; przy odświeżaniu w pętli widać komunikat o chwilowej
+niedostępności), `503` API serwisu nie odpowiada (osobny komunikat, nie „link
+nieaktywny”).
+
+Praktyczna uwaga z testów: przy braku nagłówka `User-Agent` Cloudflare przed
+`sk.mati-it.pl` potrafi opóźnić odpowiedź, dlatego klient wysyła własny
+`User-Agent: sk-klient/1.0 (+...)`. Nie usuwaj tego nagłówka.
 
 ## Synchronizacja widoku i stylów z `sk-serwis`
 

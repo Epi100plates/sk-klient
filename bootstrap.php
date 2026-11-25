@@ -65,8 +65,21 @@ function klient_fetch_status(string $token): array
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_HTTPHEADER => ['Accept: application/json'],
+            CURLOPT_HTTPHEADER => [
+                'Accept: application/json',
+                // Cloudflare bez User-Agent potrafi opóźniać odpowiedź (bot fight mode).
+                'User-Agent: sk-klient/1.0 (+' . rtrim((string) cfg('public_url'), '/') . ')',
+            ],
         ]);
+        // Opcjonalny pakiet CA (hostingi bez domyślnego curl.cainfo).
+        $caBundle = (string) cfg('ca_bundle', '');
+        if ($caBundle !== '' && is_file($caBundle)) {
+            curl_setopt($ch, CURLOPT_CAINFO, $caBundle);
+        }
+        // Wymuszenie IPv4 bywa potrzebne na hostach z niedziałającym IPv6.
+        if (!empty(cfg('ipv4_only', false))) {
+            curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+        }
         $response = curl_exec($ch);
         $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = (string) curl_error($ch);

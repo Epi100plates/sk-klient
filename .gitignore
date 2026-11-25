@@ -1,0 +1,10 @@
+# Konfiguracja lokalna i dane
+config.php
+data/
+*.log
+
+# Edytory / systemy
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
